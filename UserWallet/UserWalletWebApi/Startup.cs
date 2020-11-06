@@ -6,10 +6,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using UserWallet.BLL.Contracts;
+using UserWallet.BLL.Logic;
+using UserWallet.DAL.Api;
+using UserWallet.DAL.BD;
+using UserWallet.DAL.Contracts;
 
 namespace UserWalletWebApi
 {
@@ -25,6 +31,16 @@ namespace UserWalletWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IWalletLogic, WalletLogic>();
+            services.AddScoped<IWalletDao, WalletDao>();
+
+            services.AddScoped(o => new CurrencyDao(Configuration["API:Rate"]));
+
+            services.AddDbContext<EntityDaoContext>(options =>
+            {
+                options.UseNpgsql(Configuration.GetConnectionString("Default"));
+            });
+
             services.AddControllers();
         }
 
