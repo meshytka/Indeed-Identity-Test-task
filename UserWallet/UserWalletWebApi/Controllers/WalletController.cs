@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using UserWallet.BLL.Contracts;
 using UserWallet.Entities;
 
@@ -13,9 +9,9 @@ namespace UserWalletWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class WalletController : ControllerBase
+    public class WalletController : BaseController
     {
-        IWalletLogic _walletLogic;
+        private IWalletLogic _walletLogic;
 
         public WalletController(IWalletLogic walletLogic)
         {
@@ -24,30 +20,58 @@ namespace UserWalletWebApi.Controllers
 
         // GET api/<WalletController>/5
         [HttpGet]
-        public Wallet Get(Guid id)
+        public JsonResult Get(Guid id)
         {
-            return _walletLogic.GetUserWallet(id);
+            var userWallet = _walletLogic.GetUserWallet(id);
+
+            if (userWallet == null)
+            {
+                return ErrorResponse("No such user!");
+            }
+
+            return MessageResult(userWallet);
         }
 
         // PUT api/<WalletController>/5
         [HttpPut("TopUpWallet")]
-        public bool TopUpWallet(Guid id, Currency currencyType, decimal value)
+        public JsonResult TopUpWallet(Guid id, Currency currencyType, decimal value)
         {
-            return _walletLogic.TopUpWallet(id, currencyType, value);
+            var result = _walletLogic.TopUpWallet(id, currencyType, value);
+
+            if (!result)
+            {
+                return ErrorResponse("Error while replenishing the wallet");
+            }
+
+            return MessageResult("Wallet has been successfully replenished");
         }
 
         // PUT api/<WalletController>/5
         [HttpPut("WithdrawMoney")]
-        public bool WithdrawMoney(Guid id, Currency currencyType, decimal value)
+        public JsonResult WithdrawMoney(Guid id, Currency currencyType, decimal value)
         {
-            return _walletLogic.WithdrawMoney(id, currencyType, value);
+            var result = _walletLogic.WithdrawMoney(id, currencyType, value);
+
+            if (!result)
+            {
+                return ErrorResponse("Error when withdrawing money from the wallet!");
+            }
+
+            return MessageResult("Money has been successfully withdrawn from the wallet");
         }
 
         // PUT api/<WalletController>/5
         [HttpPut("WithdrawMoney")]
-        public bool TransferMoneyToAnotherCurrency(Guid id, Currency fromCurrency, Currency toCurrency, decimal value)
+        public JsonResult TransferMoneyToAnotherCurrency(Guid id, Currency fromCurrency, Currency toCurrency, decimal value)
         {
-            return _walletLogic.TransferMoneyToAnotherCurrency(id, fromCurrency, toCurrency, value);
+            var result = _walletLogic.TransferMoneyToAnotherCurrency(id, fromCurrency, toCurrency, value);
+
+            if (!result)
+            {
+                return ErrorResponse("Something went wrong");
+            }
+
+            return MessageResult("Money was successfully transferred to another currency");
         }
     }
 }
