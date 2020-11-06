@@ -9,9 +9,9 @@ namespace UserWallet.BLL.Logic
 {
     public class WalletLogic : IWalletLogic
     {
-        IWalletDao _walletDao;
-        CurrencyDao _currencyDao;
-        Wallet _wallet;
+        private IWalletDao _walletDao;
+        private CurrencyDao _currencyDao;
+        private Wallet _wallet;
 
         public WalletLogic(IWalletDao walletDao, CurrencyDao currencyDao)
         {
@@ -75,7 +75,7 @@ namespace UserWallet.BLL.Logic
             decimal koeff = rateFromCurrency / rateToCurrency;
             var addValue = value * koeff;
 
-            if(!WithdrawMoney(id, fromCurrency, value) || !TopUpWallet(id, toCurrency, addValue))
+            if (!WithdrawMoney(id, fromCurrency, value) || !TopUpWallet(id, toCurrency, addValue))
             {
                 return false;
             }

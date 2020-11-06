@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Serialization;
 using UserWallet.Entities;
 
 namespace UserWallet.DAL.Api
 {
     public class CurrencyDao
     {
-        string _path;
+        private string _path;
 
         public CurrencyDao(string path)
         {

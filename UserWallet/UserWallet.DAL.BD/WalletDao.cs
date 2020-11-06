@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using UserWallet.DAL.Contracts;
 using UserWallet.Entities;
@@ -7,7 +8,7 @@ namespace UserWallet.DAL.BD
 {
     public class WalletDao : IWalletDao
     {
-        EntityDaoContext _entityDaoContext;
+        private EntityDaoContext _entityDaoContext;
 
         public WalletDao(EntityDaoContext entityDaoContext)
         {
@@ -16,7 +17,10 @@ namespace UserWallet.DAL.BD
 
         public Wallet GetUserWallet(Guid id)
         {
-            return _entityDaoContext.Wallets.FirstOrDefault(w => w.ClientId == id);
+            return _entityDaoContext.Wallets.
+                Where(w => w.ClientId == id).
+                Include(wallet => wallet.CurrencyAccounts).
+                FirstOrDefault();
         }
 
         public void SaveUserWallet(Wallet wallet)
@@ -31,7 +35,6 @@ namespace UserWallet.DAL.BD
             }
 
             _entityDaoContext.SaveChanges();
-
         }
     }
 }
